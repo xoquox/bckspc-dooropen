@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Backspace Dooropener</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                font-family: Verdana;
+                font-weight: normal;
+            }
+
+            h1 {
+                background-color: #1d4d99;
+                padding: 10px;
+                line-height: 35px;
+                color: #fff;
+            }
+
+            h2 {
+                margin: 15px;    
+            }
+
+            h1 img, h1 span {
+                vertical-align: middle;    
+            }
+
+            #pin-form {
+                margin: 0 auto;
+                text-align: center;
+            }
+
+            #pin-field {
+                width: 80%;
+                font-size: 450%;
+            }
+
+            #pin-submit {
+                height: 52px;
+                width: 80%;
+                margin: 10px;
+            }
+
+
+        </style>
+
+        <script type="text/javascript">
+            $(function(){
+
+                $('#pin-form').submit( function() {
+                   var password = $('#pin-field').val()
+                   $.post('/verify/'+password, function(result) {
+                        if( result ) {
+                            if( result.response ) {
+                                alert("Your door should open now");    
+                            } else {
+                                alert("One does not simply walk into backspace");    
+                            }
+                        } else {
+                            alert('WTF? Something is wrong on the internetz.')    
+                        }
+                   });
+
+                   return false;
+                });
+            });
+        </script>
+    </head>
+    <body>
+
+        <div id="content">
+            <h1><img src="/static/backspace.png" height="35" alt="Backspace"> <span>- Door</span></h1>
+
+            <h2>Enter your pin:</h2>
+            <form id="pin-form">
+                <input type="password" name="pin-field" id="pin-field"><br>
+                <input type="submit" id="pin-submit" value="Open">
+            </form>
+
+        </div>
+        
+    </body>
+</html>
