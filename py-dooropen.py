@@ -24,6 +24,8 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://%s:%s@%s/%s' % (settings.mysql_user, settings.mysql_pass, settings.mysql_host, settings.mysql_name)
 db = SQLAlchemy(app)
 
+pp = RelaisClient('webrelais.bckspc.de', 443, username=settings.relais_user, password=settings.relais_pass )
+
 
 @app.route('/')
 def page_main():
@@ -38,18 +40,16 @@ def ajax_verify():
     password = request.form.get('password')
     opentype = request.form.get('type')
 
-    nickname = db.session.execute("select nickname from users where passwd = SHA1( CONCAT( salt, :pw ) ) LIMIT 1", {'pw': password} ).scalar()
-    if nickname:
+    userid = db.session.execute("select id from users where passwd = SHA1( CONCAT( salt, :pw ) ) LIMIT 1", {'pw': password} ).scalar()
+    if userid:
 
-        ip = request.remote_addr
+        db.session.execute("insert into log (type, userid, created) values(:type, :userid, NOW())", {'type': opentype, 'userid': userid })
+        db.session.commit()
 
         def execute():
-            pp = RelaisClient('webrelais.bckspc.de', 443, username=settings.relais_user, password=settings.relais_pass )
 
             if opentype == 'Open':
                 
-                log("User %s opens the door" % (nickname), ip)
-
                 # set door summer
                 pp.setPort(2, 1)
                 time.sleep(3)
@@ -61,7 +61,6 @@ def ajax_verify():
                 pp.setPort(0, 0)
 
             elif opentype == 'Close':
-                log("User %s closed the door" % (nickname), ip)
 
                 #close the door
                 pp.setPort(1, 1)
