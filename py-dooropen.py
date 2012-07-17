@@ -44,31 +44,30 @@ def ajax_verify():
         db.session.execute("insert into log (type, userid, created) values(:type, :userid, NOW())", {'type': opentype, 'userid': userid })
         db.session.commit()
 
-        def execute():
 
-            pp = RelaisClient('webrelais.bckspc.de', 443, username=settings.relais_user, password=settings.relais_pass )
+        pp = RelaisClient('webrelais.bckspc.de', 443, username=settings.relais_user, password=settings.relais_pass )
 
-            if opentype == 'Open':
-                
-                # set door summer
-                pp.setPort(2, 1)
-                time.sleep(3)
-                pp.setPort(2, 0)
+        if opentype == 'Open':
+            
+            # set door summer
+            pp.setPort(2, 1)
+            time.sleep(3)
+            pp.setPort(2, 0)
 
-                #open the door
-                pp.setPort(0, 1)
-                time.sleep(0.1)
-                pp.setPort(0, 0)
+            #open the door
+            pp.setPort(0, 1)
+            time.sleep(0.1)
+            pp.setPort(0, 0)
 
-            elif opentype == 'Close':
+        elif opentype == 'Close':
 
-                #close the door
-                pp.setPort(1, 1)
-                time.sleep(0.1)
-                pp.setPort(1, 0)
+            #close the door
+            pp.setPort(1, 1)
+            time.sleep(0.1)
+            pp.setPort(1, 0)
 
-        t = threading.Thread( target=execute )
-        t.start()
+       # t = threading.Thread( target=execute )
+       # t.start()
     
         return jsonify( response=True )
 
