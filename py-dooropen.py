@@ -24,8 +24,6 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://%s:%s@%s/%s' % (settings.mysql_user, settings.mysql_pass, settings.mysql_host, settings.mysql_name)
 db = SQLAlchemy(app)
 
-pp = RelaisClient('webrelais.bckspc.de', 443, username=settings.relais_user, password=settings.relais_pass )
-
 
 @app.route('/')
 def page_main():
@@ -47,6 +45,8 @@ def ajax_verify():
         db.session.commit()
 
         def execute():
+
+            pp = RelaisClient('webrelais.bckspc.de', 443, username=settings.relais_user, password=settings.relais_pass )
 
             if opentype == 'Open':
                 
