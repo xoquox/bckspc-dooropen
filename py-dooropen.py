@@ -1,32 +1,45 @@
-from flask import Flask, render_template, jsonify
-from webrelais_client import RelaisClient
+from flask import Flask, render_template, jsonify, request
+from relais_client import RelaisClient
 from flask.ext.sqlalchemy import SQLAlchemy
 
 import time
 import threading
 import datetime
+import settings
+
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://user:pass@localhost/database'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://%s:%s@%s/%s' % (settings.mysql_user, settings.mysql_pass, settings.mysql_host, settings.mysql_name)
 db = SQLAlchemy(app)
 
-door_pass = '123'
 
 @app.route('/')
 def page_main():
     return render_template('door.html')
 
-@app.route('/verify/<password>', methods=["POST", "GET"])
-def ajax_verify( password ):
+@app.route('/verify', methods=["POST"])
+def ajax_verify():
 
-    result = db.session.execute("select 1 from users where pass = SHA1( CONCAT( :pw, salt ) )", {'pw': password} ).fetchone()
+    if not 'password' in request.form:
+        return "Password field missing", 200
+
+    password = request.form.get('password')
+
+    result = db.session.execute("select 1 from users where passwd = SHA1( CONCAT( salt, :pw ) ) LIMIT 1", {'pw': password} ).fetchone()
     if result:
 
         def execute():
-            pp = RelaisClient('10.1.20.6', 5000 )
-            pp.setPort(3, 1)
+            pp = RelaisClient('webrelais.bckspc.de', 443, username=settings.relais_user, password=settings.relais_pass )
+
+            # set door summer
+            pp.setPort(2, 1)
             time.sleep(3)
-            pp.setPort(3, 0)
+            pp.setPort(2, 0)
+
+            #open the door
+            pp.setPort(0, 1)
+            time.sleep(0.1)
+            pp.setPort(0, 0)
 
         t = threading.Thread( target=execute )
         t.start()
