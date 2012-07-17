@@ -6,6 +6,18 @@ import time
 import threading
 import datetime
 import settings
+import syslog
+
+enable_logging = True
+
+syslog.openlog('dooropen')
+
+def log(msg, ip):
+
+    if enable_logging:
+        
+        msg = "[%s] %s" % (ip, msg)
+        syslog.syslog( syslog.LOG_INFO, msg )
 
 
 app = Flask(__name__)
@@ -26,13 +38,18 @@ def ajax_verify():
     password = request.form.get('password')
     opentype = request.form.get('type')
 
-    result = db.session.execute("select 1 from users where passwd = SHA1( CONCAT( salt, :pw ) ) LIMIT 1", {'pw': password} ).fetchone()
-    if result:
+    nickname = db.session.execute("select nickname from users where passwd = SHA1( CONCAT( salt, :pw ) ) LIMIT 1", {'pw': password} ).scalar()
+    if nickname:
+
+        ip = request.remote_addr
 
         def execute():
             pp = RelaisClient('webrelais.bckspc.de', 443, username=settings.relais_user, password=settings.relais_pass )
 
             if opentype == 'Open':
+                
+                log("User %s opens the door" % (nickname), ip)
+
                 # set door summer
                 pp.setPort(2, 1)
                 time.sleep(3)
@@ -44,6 +61,7 @@ def ajax_verify():
                 pp.setPort(0, 0)
 
             elif opentype == 'Close':
+                log("User %s closed the door" % (nickname), ip)
 
                 #close the door
                 pp.setPort(1, 1)
