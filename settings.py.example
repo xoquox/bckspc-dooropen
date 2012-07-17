@@ -1,0 +1,8 @@
+
+relais_user = 'doorrelais'
+relais_pass = ''
+
+mysql_host = 'host'
+mysql_user = 'dbuser'
+mysql_pass = 'mypw'
+mysql_name = 'mydb'
