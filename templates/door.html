@@ -52,7 +52,7 @@
 
                 $('#pin-form').submit( function() {
                    var password = $('#pin-field').val()
-                   $.post('/verify/'+password, function(result) {
+                   $.post('/verify', {'password': password }, function(result) {
                         if( result ) {
                             if( result.response ) {
                                 alert("Your door should open now");    
