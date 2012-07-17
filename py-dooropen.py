@@ -20,10 +20,11 @@ def page_main():
 @app.route('/verify', methods=["POST"])
 def ajax_verify():
 
-    if not 'password' in request.form:
+    if not 'password' in request.form or not 'type' in request.form:
         return "Password field missing", 200
 
     password = request.form.get('password')
+    opentype = request.form.get('type')
 
     result = db.session.execute("select 1 from users where passwd = SHA1( CONCAT( salt, :pw ) ) LIMIT 1", {'pw': password} ).fetchone()
     if result:
@@ -31,15 +32,23 @@ def ajax_verify():
         def execute():
             pp = RelaisClient('webrelais.bckspc.de', 443, username=settings.relais_user, password=settings.relais_pass )
 
-            # set door summer
-            pp.setPort(2, 1)
-            time.sleep(3)
-            pp.setPort(2, 0)
+            if opentype == 'Open':
+                # set door summer
+                pp.setPort(2, 1)
+                time.sleep(3)
+                pp.setPort(2, 0)
 
-            #open the door
-            pp.setPort(0, 1)
-            time.sleep(0.1)
-            pp.setPort(0, 0)
+                #open the door
+                pp.setPort(0, 1)
+                time.sleep(0.1)
+                pp.setPort(0, 0)
+
+            elif opentype == 'Close':
+
+                #close the door
+                pp.setPort(1, 1)
+                time.sleep(0.1)
+                pp.setPort(1, 0)
 
         t = threading.Thread( target=execute )
         t.start()
