@@ -38,7 +38,7 @@ def ajax_verify():
     password = request.form.get('password')
     opentype = request.form.get('type')
 
-    userid = db.session.execute("select id from users where passwd = SHA1( CONCAT( salt, :pw ) ) LIMIT 1", {'pw': password} ).scalar()
+    userid = db.session.execute("select id from users where active = 1 AND passwd = SHA2( CONCAT( salt, :pw ), 256 ) LIMIT 1", {'pw': password} ).scalar()
     if userid:
 
         db.session.execute("insert into log (type, userid, created) values(:type, :userid, NOW())", {'type': opentype, 'userid': userid })
