@@ -1,4 +1,5 @@
 
+relais_host = 'localhost'
 relais_user = 'doorrelais'
 relais_pass = ''
 
