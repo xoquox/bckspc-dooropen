@@ -68,7 +68,7 @@
                     var timer = setTimeout( function() {
                         lock = false;
                         $('.pin-submit').removeAttr('disabled');
-                    }, 2000 );
+                    }, 3500 );
 
                     $.post('/verify', {'password': password, 'type': opentype }, function(result) {
 
