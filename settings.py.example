@@ -1,5 +1,8 @@
 
+logging = True
+
 relais_host = 'localhost'
+relais_port = 443
 relais_user = 'doorrelais'
 relais_pass = ''
 
