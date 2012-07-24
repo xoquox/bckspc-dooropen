@@ -1,10 +1,8 @@
 import settings
 import threading
-import syslog
 import time
 from relais_client import RelaisClient
 
-syslog.openlog('dooropen')
 
 class DoorOperation(threading.Thread):
 
@@ -48,13 +46,5 @@ class DoorOperation(threading.Thread):
         pp.setPort(1, 1)
         time.sleep(0.1)
         pp.setPort(1, 0)
-
-
-def log(msg, ip):
-
-    if settings.logging:
-        
-        msg = "[%s] %s" % (ip, msg)
-        syslog.syslog( syslog.LOG_INFO, msg )
 
 
