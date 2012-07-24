@@ -15,7 +15,6 @@ class DoorOperation(threading.Thread):
     def run(self):
 
         if not self.lock.acquire( False ):
-            print "Operation currently in progress. Exiting thread"
             return False
 
         pp = RelaisClient( settings.relais_host, settings.relais_port, username=settings.relais_user, password=settings.relais_pass )
