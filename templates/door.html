@@ -50,14 +50,28 @@
         <script type="text/javascript">
             $(function(){
 
-                $('#pin-form').submit(function() {
-                   return false; 
-                });
+                var lock = false;
 
                 $('.pin-submit').click( function() {
-                   var password = $('#pin-field').val();
-                   var opentype = $(this).attr('value');
-                   $.post('/verify', {'password': password, 'type': opentype }, function(result) {
+
+                    var password = $('#pin-field').val();
+                    var opentype = $(this).attr('value');
+
+                    if( lock ) {
+                        alert("It seems that you have nervous fingers. keep calm!");
+                        return false;
+                    }
+
+                    #$('.pin-submit').attr('disabled', 'disabled');
+
+                    lock = true;
+                    var timer = setTimeout( function() {
+                        lock = false;
+                        $('.pin-submit').removeAttr('disabled');
+                    }, 2000 );
+
+                    $.post('/verify', {'password': password, 'type': opentype }, function(result) {
+
                         if( result ) {
                             if( result.response ) {
                                 if( opentype == 'Open' ) {
@@ -71,9 +85,9 @@
                         } else {
                             alert('WTF? Something is wrong on the internetz.')    
                         }
-                   });
+                    });
 
-                   return false;
+                    return false;
                 });
             });
         </script>
@@ -84,11 +98,11 @@
             <h1><img src="/static/backspace.png" height="35" alt="Backspace"> <span>- Door</span></h1>
 
             <h2>Enter your pin:</h2>
-            <form id="pin-form">
+            <div id="pin-form">
                 <input type="password" name="pin-field" id="pin-field"><br>
                 <input type="submit" class="pin-submit" name="opentype" value="Open">
                 <input type="submit" class="pin-submit" name="opentype" value="Close">
-            </form>
+            </div>
 
         </div>
         
