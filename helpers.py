@@ -20,15 +20,15 @@ class DoorOperation(threading.Thread):
 
         pp = RelaisClient( settings.relais_host, settings.relais_port, username=settings.relais_user, password=settings.relais_pass )
 
-        if self.op == False:
+        if self.op == True:
             self.open_door( pp )   
-        elif self.op == True:
+        elif self.op == False:
             self.close_door( pp )
 
         self.lock.release()
 
 
-    def open_door(self):
+    def open_door(self, pp):
 
         # set door summer
         pp.setPort(2, 1)
@@ -40,7 +40,7 @@ class DoorOperation(threading.Thread):
         time.sleep(0.1)
         pp.setPort(0, 0)
 
-    def close_door(self):
+    def close_door(self, pp):
         
         #close the door
         pp.setPort(1, 1)
