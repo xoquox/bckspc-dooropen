@@ -31,13 +31,17 @@ class DoorOperation(threading.Thread):
 
         # set door summer
         pp.setPort(2, 1)
-        time.sleep(3)
-        pp.setPort(2, 0)
 
         #open the door
         pp.setPort(0, 1)
         time.sleep(0.1)
         pp.setPort(0, 0)
+
+
+        # stop door summer
+        time.sleep(3)
+        pp.setPort(2, 0)
+
 
     def close_door(self, pp):
         
