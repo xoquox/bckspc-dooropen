@@ -81,7 +81,19 @@
                                     alert("Your door should lock now");    
                                 }
                             } else {
-                                alert("One does not simply walk into backspace");    
+                                switch(Math.floor(Math.random()*3))
+                                {
+                                    default:
+                                    case 0:
+                                        alert("One does not simply walk into backspace");
+                                        break;
+                                    case 1:
+                                        alert("None shall pass!")
+                                        break;
+                                    case 2:
+                                        alert("I'm afraid i can't do that")
+                                        break;
+                                }
                             }
                         } else {
                             alert('WTF? Something is wrong on the internetz.')    
